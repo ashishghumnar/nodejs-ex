@@ -3,12 +3,14 @@ var express = require('express'),
     fs = require('fs'),
     app = express(),
     eps = require('ejs'),
-    morgan = require('morgan');
+    morgan = require('morgan'),
+    bodyParser = require('body-parser');
 
 Object.assign = require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'))
+app.use(morgan('combined'));
+app.use(bodyParser.json());
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
@@ -21,7 +23,7 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
         mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'],
         mongoDatabase = process.env[mongoServiceName + '_DATABASE'],
         mongoPassword = process.env[mongoServiceName + '_PASSWORD']
-    mongoUser = process.env[mongoServiceName + '_USER'];
+        mongoUser = process.env[mongoServiceName + '_USER'];
 
     if (mongoHost && mongoPort && mongoDatabase) {
         mongoURLLabel = mongoURL = 'mongodb://';
@@ -61,6 +63,8 @@ var initDb = function (callback) {
     });
 };
 
+app.use(express.static('views'));
+
 app.get('/', function (req, res) {
     // try to initialize the db on every request if it's not already
     // initialized.
@@ -94,6 +98,27 @@ app.get('/pagecount', function (req, res) {
     } else {
         res.send('{ pageCount: -1 }');
     }
+});
+
+app.post('/toggleBulb', function (req, res) {
+    var col = db.collection('devices');
+
+    col.findOneAndUpdate({_id: req.body._id}, req.body).then(function (response) {
+        res.send();
+    });
+});
+
+app.get('/devicesStatus', function (req, res) {
+    var collection = db.collection('devices');
+
+    collection.find({}).toArray(function (err, items) {
+        if (err) {
+            res.send({error: 'Could not find'});
+            return;
+        }
+
+        res.send(items);
+    })
 });
 
 // error handling
