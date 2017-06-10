@@ -12,7 +12,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 9002,
     ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
@@ -22,7 +22,7 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
         mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'],
         mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'],
         mongoDatabase = process.env[mongoServiceName + '_DATABASE'],
-        mongoPassword = process.env[mongoServiceName + '_PASSWORD']
+        mongoPassword = process.env[mongoServiceName + '_PASSWORD'],
         mongoUser = process.env[mongoServiceName + '_USER'];
 
     if (mongoHost && mongoPort && mongoDatabase) {
@@ -42,8 +42,7 @@ var db = null,
 var initDb = function (callback) {
     if (mongoURL == null) {
         mongoURL = 'mongodb://localhost:27017/myproject';
-    }
-    ;
+    };
 
     var mongodb = require('mongodb');
     if (mongodb == null) return;
@@ -104,6 +103,14 @@ app.post('/toggleBulb', function (req, res) {
     var col = db.collection('devices');
 
     col.findOneAndUpdate({_id: req.body._id}, req.body).then(function (response) {
+        res.send();
+    });
+});
+
+app.post('/createNewDevice', function (req, res) {
+    var col = db.collection('devices');
+
+    col.insertOne(req.body).then(function (response) {
         res.send();
     });
 });

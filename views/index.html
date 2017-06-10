@@ -32,22 +32,49 @@
         </div>
     </div>
 
-    <button class="btn btn-large" ng-click="ctrl.checkLightStatus()">Get Status</button>
+    <div class="row">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Device Name</th>
+                    <th>Device Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="device in ctrl.deviceStatus">
+                    <td>{{device.deviceName}}</td>
+                    <td>{{device.deviceStatus}}</td>
+                </tr>
+                </tbody>
+            </table>
+    </div>
 
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Device Name</th>
-            <th>Device Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="device in ctrl.deviceStatus">
-            <td>{{device.deviceName}}</td>
-            <td>{{device.deviceStatus}}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <form class="col-md-4">
+            <div class="form-group">
+                <label for="deviceName">Device Name:</label>
+                <input type="text" class="form-control" id="deviceName" ng-model="ctrl.deviceInfo.deviceName">
+            </div>
+            <div class="form-group">
+                <label>Device Status</label>
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" ng-model="ctrl.deviceInfo.deviceStatus='ON'">
+                            ON
+                        </button>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default"
+                                ng-model="ctrl.deviceInfo.deviceStatus='OFF'">OFF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-default" ng-click="ctrl.createNewDevice()">Submit</button>
+        </form>
+    </div>
 
 </div>
 

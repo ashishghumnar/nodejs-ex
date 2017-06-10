@@ -10,20 +10,28 @@ function AppCtrl($scope, $http) {
     var vm = this;
 
     vm.deviceStatus = '';
+    vm.deviceInfo = {};
 
-    $http.get('/devicesStatus').then(function (res) {
-        vm.deviceStatus = res.data;
-    });
+    getDevices();
+
+    function getDevices() {
+        $http.get('/devicesStatus').then(function (res) {
+            vm.deviceStatus = res.data;
+        });
+    }
 
     vm.sendRequestToServer = function (device, val) {
         device.deviceStatus = val === 'ON' ? 'ON' : 'OFF';
 
         $http.post('/toggleBulb', device).then(function (res) {
-           console.log('Turned On light');
+
         });
     };
 
-    vm.checkLightStatus = function () {
-
+    vm.createNewDevice = function () {
+        $http.post('/createNewDevice', vm.deviceInfo).then(function (res) {
+            alert('Device Added');
+            getDevices();
+        });
     }
 }
