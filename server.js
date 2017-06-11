@@ -15,7 +15,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8008,
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
