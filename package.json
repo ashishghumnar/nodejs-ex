@@ -13,7 +13,8 @@
     "mongodb": "^2.1.16",
     "morgan": "^1.7.0",
     "object-assign": "4.1.0",
-    "onsenui": "^2.3.3"
+    "onsenui": "^2.3.3",
+    "socket.io": "^2.0.2"
   },
   "engine": {
     "node": "*",

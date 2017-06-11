@@ -6,6 +6,9 @@ var express = require('express'),
     morgan = require('morgan'),
     bodyParser = require('body-parser');
 
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
 Object.assign = require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
@@ -64,6 +67,17 @@ var initDb = function (callback) {
 
 app.use(express.static('views'));
 
+io.on('connection', function (socket) {
+    app.post('/toggleBulb', function (req, res) {
+        var col = db.collection('devices');
+
+        col.updateOne({deviceName: req.body.deviceName}, {$set:{deviceStatus: req.body.deviceStatus}}).then(function (error, resultResp) {
+            socket.emit('switchToggle', req.body);
+            res.send();
+        });
+    });
+});
+
 app.get('/', function (req, res) {
     // try to initialize the db on every request if it's not already
     // initialized.
@@ -81,34 +95,6 @@ app.get('/', function (req, res) {
     } else {
         res.render('index.html', {pageCountMessage: null});
     }
-});
-
-app.get('/pagecount', function (req, res) {
-    // try to initialize the db on every request if it's not already
-    // initialized.
-    if (!db) {
-        initDb(function (err) {
-        });
-    }
-    if (db) {
-        db.collection('counts').count(function (err, count) {
-            res.send('{ pageCount: ' + count + '}');
-        });
-    } else {
-        res.send('{ pageCount: -1 }');
-    }
-});
-
-app.post('/toggleBulb', function (req, res) {
-    var col = db.collection('devices');
-
-    col.updateOne({deviceName: req.body.deviceName}, {$set:{deviceStatus: req.body.deviceStatus}}).then(function (error, resultResp) {
-        if (error) {
-            return;
-        }
-
-        res.send();
-    });
 });
 
 app.post('/createNewDevice', function (req, res) {
@@ -142,7 +128,7 @@ initDb(function (err) {
     console.log('Error connecting to Mongo. Message:\n' + err);
 });
 
-app.listen(port, ip);
+server.listen(port, ip);
 console.log('Server running on http://%s:%s', ip, port);
 
 module.exports = app;
