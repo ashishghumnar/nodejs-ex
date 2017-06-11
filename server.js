@@ -12,7 +12,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 9002,
     ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
@@ -102,7 +102,11 @@ app.get('/pagecount', function (req, res) {
 app.post('/toggleBulb', function (req, res) {
     var col = db.collection('devices');
 
-    col.findOneAndUpdate({_id: req.body._id}, req.body).then(function (response) {
+    col.updateOne({deviceName: req.body.deviceName}, {$set:{deviceStatus: req.body.deviceStatus}}).then(function (error, resultResp) {
+        if (error) {
+            return;
+        }
+
         res.send();
     });
 });
